@@ -166,6 +166,9 @@ function App() {
     const costoBiomasaNoVendida = kilosNoVendidos * costoPorKgVivo;
     const ingresosDejadosDePercibir = kilosNoVendidos * (precioVenta || 0);
 
+    const costoMerma = merma.kg * costoPorKgVivo;
+    const eficienciaVenta = biomasaTotal > 0 ? ((kilosVendidos || 0) / biomasaTotal) * 100 : 0;
+
     return {
       costoTotalProduccion,
       costoPorKgVivo,
@@ -175,7 +178,9 @@ function App() {
       perdidaPorMortalidad,
       kilosNoVendidos,
       costoBiomasaNoVendida,
-      ingresosDejadosDePercibir
+      ingresosDejadosDePercibir,
+      costoMerma,
+      eficienciaVenta
     };
   }, [cantidadAlimento, precioAlimento, flete, manoObra, empaque, biomasaTotal, precioVenta, kilosVendidos, poblacionFinal, costoAlevino, numeroAlevinos, merma.kg]);
 
@@ -265,7 +270,7 @@ function App() {
           </div>
 
           {/* Análisis Adicional de Pérdidas */}
-          {(financieros.perdidaPorMortalidad > 0 || financieros.kilosNoVendidos > 0) && (
+          {(financieros.perdidaPorMortalidad > 0 || financieros.kilosNoVendidos > 0 || financieros.costoMerma > 0) && (
             <div className="mt-8 pt-6 border-t border-slate-100/50">
               <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-amber-500" /> Análisis de Eficiencia y Pérdidas
@@ -278,19 +283,27 @@ function App() {
                     <p className="text-xs text-amber-600/80 mt-1">Costo directo por pérdida de alevinos.</p>
                   </div>
                 )}
-                {financieros.kilosNoVendidos > 0 && (
+                {financieros.costoMerma > 0 && (
+                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Costo de la Merma</p>
+                    <p className="text-2xl font-bold text-slate-700">{formatCurrency(financieros.costoMerma)}</p>
+                    <p className="text-xs text-slate-500 mt-1">Costo invertido en vísceras/desperdicios.</p>
+                  </div>
+                )}
+                {financieros.kilosNoVendidos > 0 ? (
                   <div className="bg-red-50 rounded-xl p-4 border border-red-100">
                     <p className="text-xs font-semibold text-red-600 uppercase tracking-wider mb-1">Lucro Cesante (No vendido)</p>
                     <p className="text-2xl font-bold text-red-700">{formatCurrency(financieros.ingresosDejadosDePercibir)}</p>
-                    <p className="text-xs text-red-600/80 mt-1">Ingresos dejados de percibir por {formatNumber(financieros.kilosNoVendidos)} kg restantes.</p>
+                    <p className="text-xs text-red-600/80 mt-1">Por {formatNumber(financieros.kilosNoVendidos)} kg no comercializados.</p>
                   </div>
-                )}
-                {financieros.costoBiomasaNoVendida > 0 && (
-                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Costo Atrapado</p>
-                    <p className="text-2xl font-bold text-slate-700">{formatCurrency(financieros.costoBiomasaNoVendida)}</p>
-                    <p className="text-xs text-slate-500 mt-1">Costo de producción de la biomasa no vendida.</p>
-                  </div>
+                ) : (
+                  financieros.eficienciaVenta > 0 && (
+                    <div className="bg-accent-50 rounded-xl p-4 border border-accent-100">
+                      <p className="text-xs font-semibold text-accent-600 uppercase tracking-wider mb-1">Eficiencia de Venta</p>
+                      <p className="text-2xl font-bold text-accent-700">{formatNumber(financieros.eficienciaVenta, 1)}%</p>
+                      <p className="text-xs text-accent-600/80 mt-1">Toda la biomasa fue comercializada.</p>
+                    </div>
+                  )
                 )}
               </div>
             </div>
