@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Calculator, Fish, TrendingUp, Package, Truck, Info, Settings, AlertCircle, DollarSign, Activity } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { Calculator, TrendingUp, Package, Truck, Info, Settings, AlertCircle, DollarSign, Activity } from 'lucide-react';
 import './App.css';
 
 const FormattedNumberInput = ({ value, onChange, placeholder, className }: { value: number | ''; onChange: (val: number | '') => void; placeholder?: string; className?: string }) => {
